@@ -1,0 +1,24 @@
+const getAvailableMonths = require('./utils/getAvailableMonths');
+
+app.get('/select-month', (req, res) => {
+    const userId = req.query.userId; // LINEログインで取得したIDを渡す想定
+    const months = getAvailableMonths(userId);
+
+    if (!months.length) {
+        return res.send('給与明細が存在しません');
+    }
+
+    const options = months.map(month => `<option value="${month}">${month}</option>`).join('');
+
+    res.send(`
+        <h1>月を選択してください</h1>
+        <form action="/payslip" method="get">
+            <input type="hidden" name="userId" value="${userId}" />
+            <select name="month">
+                ${options}
+            </select>
+            <button type="submit">表示</button>
+        </form>
+    `);
+});
+
