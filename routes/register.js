@@ -25,6 +25,8 @@ router.get('/', csrfProtection, (req, res) => {
       }
     }
   }
+//
+  res.render('register', { csrfToken: req.csrfToken(), userId });
 
   // 未登録なら register.html を返す
   res.sendFile(path.join(__dirname, '../public', 'register.html'));
@@ -37,6 +39,7 @@ router.post('/', csrfProtection, (req, res) => {
   if (!name || !department || !userId) {
     return res.status(400).send('登録情報が不足しています');
   }
+ 
 
   // CSVファイルを読み込んで、すでに登録されてないかチェック
   if (fs.existsSync(employeesCsvPath)) {
