@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>従業員登録</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: 'Noto Sans JP', sans-serif; padding: 20px; }
+    h1 { text-align: center; }
+    form { max-width: 400px; margin: 20px auto; }
+    label, select, input, button { display: block; width: 100%; margin-bottom: 15px; font-size: 16px; }
+    button { background-color: #681515; color: white; border: none; padding: 10px; border-radius: 5px; }
+    button:hover { background-color: #681515; }
+  </style>
+</head>
+<body>
+
+  <h1>従業員登録</h1>
+
+  <form action="/register" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" id="userId" name="userId" value="<%= userId %>">
+
+    <label for="name">名前:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="department">所属:</label>
+    <select id="department" name="department" required>
+      <option value="">選択してください</option>
+      <option value="札幌本店">札幌本店</option>
+      <option value="札幌北33条店">札幌北33条店</option>
+      <option value="札幌中央店">札幌中央店</option>
+      <option value="旭川東光店">旭川東光店</option>
+      <option value="旭川春光店">旭川春光店</option>
+    </select>
+
+    <button type="submit">登録する</button>
+  </form>
+
+</body>
+</html>
