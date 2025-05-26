@@ -26,10 +26,10 @@ router.get('/', csrfProtection, (req, res) => {
     }
   }
 //
+  //未登録の場合、register.ejsに返す
   res.render('register', { csrfToken: req.csrfToken(), userId });
 
-  // 未登録なら register.html を返す
-  res.sendFile(path.join(__dirname, '../public', 'register.html'));
+
 });
 
 // 登録処理
