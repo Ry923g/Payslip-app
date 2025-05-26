@@ -6,6 +6,8 @@ const session = require('express-session');
 const csrf = require('csurf'); // CSRF対策用
 const cookieParser = require('cookie-parser'); // Cookie操作用
 
+
+
 // 各ルートをインポート
 const authRoutes = require('./routes/auth.js');
 const registerRoutes = require('./routes/register.js');
@@ -15,10 +17,14 @@ const ppdfRoutes = require('./routes/ppdf.js');
 const monthsRoutes = require('./routes/months.js');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // 静的ファイル提供
 app.use(express.static('public'));
+// テンプレートエンジンの指定
+app.set('view engine', 'ejs');
+// テンプレートファイルの場所（通常は'views'ディレクトリ）
+app.set('views', path.join(__dirname, 'views'));
 
 // セッションの設定
 app.use(session({
