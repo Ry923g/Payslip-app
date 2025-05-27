@@ -73,15 +73,24 @@ router.get('/callback', async (req, res) => {
   }
 });
 
-// Google認証情報を読み込み
-const CREDENTIALS_PATH = path.join(__dirname, '..', 'credentials.json');
-const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
-const { client_id, client_secret, redirect_uris } = credentials.web;
+let client_id, client_secret, redirect_uri;
+if (process.env.GOOGLE_CLIENT_ID) {
+  // 本番(環境変数)
+  client_id = process.env.GOOGLE_CLIENT_ID;
+  client_secret = process.env.GOOGLE_CLIENT_SECRET;
+  redirect_uri = process.env.GOOGLE_REDIRECT_URI;
+} else {
+  // ローカル(ファイル)
+  const credentials = require('../credentials.json');
+  client_id = credentials.web.client_id;
+  client_secret = credentials.web.client_secret;
+  redirect_uri = credentials.web.redirect_uris[0];
+}
 
 const oAuth2Client = new google.auth.OAuth2(
   client_id,
   client_secret,
-  redirect_uris[0] // GCPで登録したリダイレクトURI
+  redirect_uri
 );
 
 // 認証ページへリダイレクト
@@ -123,6 +132,7 @@ router.get('/drive/list', async (req, res) => {
   const result = await drive.files.list({ pageSize: 10 });
   res.json(result.data.files);
 });
+
 
 // ログアウト処理
 router.get('/logout', (req, res) => {
