@@ -63,11 +63,17 @@ router.get('/callback/line', async (req, res) => {
 
 // --- Google認証 ---
 let client_id, client_secret, redirect_uri;
-if (process.env.GOOGLE_CLIENT_ID) {
+if (
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  process.env.GOOGLE_REDIRECT_URI
+) {
+  // 3つとも揃っていれば本番モード
   client_id = process.env.GOOGLE_CLIENT_ID;
   client_secret = process.env.GOOGLE_CLIENT_SECRET;
   redirect_uri = process.env.GOOGLE_REDIRECT_URI;
 } else {
+  // ローカル（credentials.json）
   const credentials = require('../credentials.json');
   client_id = credentials.web.client_id;
   client_secret = credentials.web.client_secret;
