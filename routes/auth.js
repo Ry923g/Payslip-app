@@ -1,6 +1,9 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 
 router.get('/', (req, res) => {
   const redirectUri = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(process.env.LINE_CALLBACK_URL)}&state=12345&scope=profile openid`;
@@ -43,8 +46,7 @@ router.get('/callback', async (req, res) => {
 
       // 登録チェック
       const employeesCsvPath = require('path').join(__dirname, '../data', 'employees.csv');
-      const fs = require('fs');
-      let isRegistered = false;
+           let isRegistered = false;
       if (fs.existsSync(employeesCsvPath)) {
         const csvData = fs.readFileSync(employeesCsvPath, 'utf8');
         const lines = csvData.split('\n').slice(1); // ヘッダー除く
@@ -69,6 +71,57 @@ router.get('/callback', async (req, res) => {
     console.error('ログイン時のエラー:', err.response?.data || err);
     res.send('ログインエラーが発生しました');
   }
+});
+
+// Google認証情報を読み込み
+const CREDENTIALS_PATH = path.join(__dirname, '..', 'credentials.json');
+const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
+const { client_id, client_secret, redirect_uris } = credentials.web;
+
+const oAuth2Client = new google.auth.OAuth2(
+  client_id,
+  client_secret,
+  redirect_uris[0] // GCPで登録したリダイレクトURI
+);
+
+// 認証ページへリダイレクト
+router.get('/google', (req, res) => {
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline', // リフレッシュトークン取得
+    scope: [
+      'https://www.googleapis.com/auth/drive.file' // ドライブのファイル操作権限
+    ],
+    prompt: 'consent'
+  });
+  res.redirect(authUrl);
+});
+
+// Googleからのコールバックを受け取る
+router.get('/callback', async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.status(400).send('No code provided');
+
+  try {
+    const { tokens } = await oAuth2Client.getToken(code);
+    oAuth2Client.setCredentials(tokens);
+
+    // トークンを安全に保存する（本番はDBやシークレットストア推奨）
+    fs.writeFileSync('tokens.json', JSON.stringify(tokens));
+
+    res.send('Google認証完了！APIアクセスの準備ができました。');
+  } catch (err) {
+    res.status(500).send('Google認証失敗: ' + err.message);
+  }
+});
+
+// テスト用：保存済みトークンでDrive APIにアクセス
+router.get('/drive/list', async (req, res) => {
+  const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
+  oAuth2Client.setCredentials(tokens);
+
+  const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+  const result = await drive.files.list({ pageSize: 10 });
+  res.json(result.data.files);
 });
 
 // ログアウト処理
