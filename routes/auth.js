@@ -103,6 +103,20 @@ router.get('/callback/google', async (req, res) => {
   }
 });
 
+router.get('/callback', async (req, res) => {
+  // /callback/google と同じ処理内容をここでも実行
+  const code = req.query.code;
+  if (!code) return res.status(400).send('No code provided');
+  try {
+    const { tokens } = await oAuth2Client.getToken(code);
+    oAuth2Client.setCredentials(tokens);
+    fs.writeFileSync('tokens.json', JSON.stringify(tokens));
+    res.send('Google認証完了！APIアクセスの準備ができました。');
+  } catch (err) {
+    res.status(500).send('Google認証失敗: ' + err.message);
+  }
+});
+
 router.get('/drive/list', async (req, res) => {
   const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
   oAuth2Client.setCredentials(tokens);
