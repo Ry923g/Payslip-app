@@ -1,9 +1,26 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const { google } = require('googleapis');
-const fs = require('fs');
+const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
+
+// Supabaseクライアントの初期化
+// 環境変数からURLとAnonキーを読み込む
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+// URLまたはキーが未設定の場合はエラーにするか、起動前に確認が必要
+if (!supabaseUrl || !supabaseKey) {
+    // ここでエラーを発生させるか、適切なハンドリングを行う
+    // エラーログに出る場合は、ここで落ちている可能性が高い
+    console.error("FATAL ERROR: SUPABASE_URL or SUPABASE_ANON_KEY is not set.");
+    // process.exit(1); // 強制終了も検討
+}
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 // --- LINE認証 ---
 router.get('/', (req, res) => {
@@ -33,25 +50,23 @@ router.get('/callback/line', async (req, res) => {
     const profile = profileRes.data;
     const userId = profile.userId;
 
-    req.session.regenerate((err) => {
+    req.session.regenerate(async (err) => {
       if (err) return res.status(500).send('セッションエラーが発生しました');
       req.session.userId = userId;
-      const employeesCsvPath = path.join(__dirname, '../data', 'employees.csv');
-      let isRegistered = false;
-      if (fs.existsSync(employeesCsvPath)) {
-        const csvData = fs.readFileSync(employeesCsvPath, 'utf8');
-        const lines = csvData.split('\n').slice(1);
-        for (const line of lines) {
-          const [existingUserId] = line.split(',');
-          if (existingUserId.trim() === userId) {
-            isRegistered = true;
-            break;
-          }
-        }
+
+      // Supabaseで従業員テーブルを検索
+      const { data: employees, error } = await supabase
+        .from('Employees')
+        .select('*')
+        .eq('line_user_id', userId);
+      if (error) {
+        return res.status(500).send('DBエラー');
       }
-      if (isRegistered) {
+      if (employees.length > 0) {
+        // 登録済みユーザー
         res.redirect(`/select?userId=${userId}`);
       } else {
+        // 未登録ユーザー
         res.redirect(`/register?userId=${userId}`);
       }
     });
@@ -59,70 +74,6 @@ router.get('/callback/line', async (req, res) => {
     console.error('ログイン時のエラー:', err.response?.data || err);
     res.send('ログインエラーが発生しました');
   }
-});
-
-// --- Google認証 ---
-let client_id, client_secret, redirect_uri;
-if (
-  process.env.GOOGLE_CLIENT_ID &&
-  process.env.GOOGLE_CLIENT_SECRET &&
-  process.env.GOOGLE_REDIRECT_URI
-) {
-  // 3つとも揃っていれば本番モード
-  client_id = process.env.GOOGLE_CLIENT_ID;
-  client_secret = process.env.GOOGLE_CLIENT_SECRET;
-  redirect_uri = process.env.GOOGLE_REDIRECT_URI;
-} else {
-  // ローカル（credentials.json）
-  const credentials = require('../credentials.json');
-  client_id = credentials.web.client_id;
-  client_secret = credentials.web.client_secret;
-  redirect_uri = credentials.web.redirect_uris[0];
-}
-const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uri);
-
-router.get('/google', (req, res) => {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: ['https://www.googleapis.com/auth/drive.file'],
-    prompt: 'consent'
-  });
-  res.redirect(authUrl);
-});
-
-router.get('/callback/google', async (req, res) => {
-  const code = req.query.code;
-  if (!code) return res.status(400).send('No code provided');
-  try {
-    const { tokens } = await oAuth2Client.getToken(code);
-    oAuth2Client.setCredentials(tokens);
-    fs.writeFileSync('tokens.json', JSON.stringify(tokens));
-    res.send('Google認証完了！APIアクセスの準備ができました。');
-  } catch (err) {
-    res.status(500).send('Google認証失敗: ' + err.message);
-  }
-});
-
-router.get('/callback', async (req, res) => {
-  // /callback/google と同じ処理内容をここでも実行
-  const code = req.query.code;
-  if (!code) return res.status(400).send('No code provided');
-  try {
-    const { tokens } = await oAuth2Client.getToken(code);
-    oAuth2Client.setCredentials(tokens);
-    fs.writeFileSync('tokens.json', JSON.stringify(tokens));
-    res.send('Google認証完了！APIアクセスの準備ができました。');
-  } catch (err) {
-    res.status(500).send('Google認証失敗: ' + err.message);
-  }
-});
-
-router.get('/drive/list', async (req, res) => {
-  const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
-  oAuth2Client.setCredentials(tokens);
-  const drive = google.drive({ version: 'v3', auth: oAuth2Client });
-  const result = await drive.files.list({ pageSize: 10 });
-  res.json(result.data.files);
 });
 
 router.get('/logout', (req, res) => {
