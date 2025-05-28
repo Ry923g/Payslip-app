@@ -28,7 +28,7 @@ router.get('/', (req, res) => {
   res.redirect(redirectUri);
 });
 
-router.get('/callback/line', async (req, res) => {
+router.get('/callback/', async (req, res) => {
   const code = req.query.code;
   try {
     const qs = require('querystring');
