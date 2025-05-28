@@ -62,9 +62,9 @@ router.get('/callback', async (req, res) => {
         const userId = profileResponse.data.userId; // LINEユーザーID
 
         // --- ここからSupabase連携 ---
-        // SupabaseでEmployeesテーブルを検索
+        // Supabaseでemployeesテーブルを検索
         const { data: employees, error: dbError } = await supabase
-            .from('Employees')
+            .from('employees')
             .select('*')
             .eq('line_user_id', userId); // LINEユーザーIDで検索
 
