@@ -83,7 +83,7 @@ router.get('/callback', async (req, res) => {
             // 未登録ユーザー
             req.session.userId = userId; // 未登録でもuserIdはセッションに保存
             console.log(`ユーザー ${userId} は未登録です。`);
-            res.redirect('/register'); // /register?userId=${userId} から変更
+            res.redirect('/register?userId=${userId}'); // /register?userId=${userId} から変更
         }
 
     } catch (err) {
