@@ -65,8 +65,11 @@ router.get('/', csrfProtection, async (req, res) => {
 // CSRF対策を適用（トークン検証はcsurfミドルウェアが自動で行います）
 
 router.post('/', csrfProtection, async (req, res) => { // async を追加してください
-    // フォームから送信されたデータとセッションからuserIdを取得
-    const userId = req.session.userId; // セッションに保存されているuserIdを使用
+        // フォームから送信されたデータとセッションからuserIdを取得
+
+    console.log('POST body:', req.body); // ここで値を確認テスト
+
+        const userId = req.session.userId; // セッションに保存されているuserIdを使用
     const { name, shop } = req.body; // フォームのname, shopフィールドを想定
 
     // バリデーションチェック（名前、所属、ユーザーIDが必須）
