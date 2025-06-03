@@ -69,17 +69,12 @@ router.post('/', csrfProtection, async (req, res) => { // async を追加して�
 
     console.log('POST body:', req.body); // ここで値を確認テスト
 
-        const userId = req.session.userId; // セッションに保存されているuserIdを使用
-    const { name, shop } = req.body; // フォームのname, shopフィールドを想定
+       // 修正: セッションではなくPOSTデータから受け取る
+    const { userId, name, shop } = req.body;
 
-    // バリデーションチェック（名前、所属、ユーザーIDが必須）
-    // userIdはセッションから来ますが、念のため存在チェックは残すか、セッションミドルウェアで制御
-    if (!name || !shop || !userId) { // userIdのチェックも維持
-        // エラーメッセージ付きでフォームを再表示するか、エラーページにリダイレクト
-        // 現在はテキストを返していますが、CSRF対策されたテンプレート表示が望ましい [1, 4, 5]
-        return res.status(400).send('登録情報が不足しています'); // 仮のエラー応答
+    if (!name || !shop || !userId) {
+        return res.status(400).send('登録情報が不足しています');
     }
-
     try {
         // ★ ここからSupabaseへのデータ登録処理を追加/置き換え ★
 
