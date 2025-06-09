@@ -78,7 +78,7 @@ router.get('/callback', async (req, res) => {
             req.session.userId = userId; // LINEユーザーIDをセッションに保存
             // 必要なら、employeesから取得した従業員DB上のIDなどもセッションに保存
             console.log(`ユーザー ${userId} は登録済みです。セッションID: ${req.session.id}`);
-            res.redirect('/select'); // /select?userId=${userId} から変更
+            res.redirect(`/select?userId=${userId}`); 
         } else {
             // 未登録ユーザー
             req.session.userId = userId; // 未登録でもuserIdはセッションに保存
