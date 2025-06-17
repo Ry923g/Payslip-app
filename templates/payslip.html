@@ -6,7 +6,7 @@
   <title>給与支払明細書</title>
   <style>
     body {
-      font-family: "ＭＳ 明朝", "MS Mincho", serif;
+      font-family: "IPAexMincho", "Meiryo", serif;
       margin: 0;
       padding: 0;
       max-width: 100%;
@@ -16,7 +16,7 @@
       text-align: center;
       font-size: 24px;
       margin-top: 10px;
-      font-family: "ＭＳ ゴシック", "MS Gothic", monospace;
+      font-family: "IPAexGothic", "Meiryo", monospace;
     }
     .sub-title {
       text-align: center;
@@ -81,26 +81,12 @@
     .download-button a:hover {
       background-color: #681515;
     }
-
-    /* スマホ用調整 */
     @media (max-width: 600px) {
-      .title {
-        font-size: 20px;
-      }
-      .sub-title {
-        font-size: 16px;
-      }
-      .name-line {
-        font-size: 16px;
-        margin-top: 15px;
-      }
-      table {
-        width: 95%;
-        font-size: 12px;
-      }
-      th, td {
-        padding: 4px;
-      }
+      .title { font-size: 20px; }
+      .sub-title { font-size: 16px; }
+      .name-line { font-size: 16px; margin-top: 15px; }
+      table { width: 95%; font-size: 12px; }
+      th, td { padding: 4px; }
     }
   </style>
 </head>
@@ -108,7 +94,6 @@
 
   <div class="title">給与支払明細書</div>
   <div class="sub-title">{{month}}</div>
-
   <div class="name-line">{{name}} 殿</div>
 
   <table>
@@ -117,21 +102,17 @@
     <tr><th>労働時間</th><td>{{workHours}}h</td></tr>
     <tr><th>所定時間外労働</th><td>{{overtimeH}}h</td></tr>
 
+    <tr><td colspan="2"></td></tr>
     <tr><th colspan="2" class="section-title">支給</th></tr>
     {{allowanceHtml}}
-    <td style="border: 1px solid black; background-color: #e0e0e0; height:10px;"></td>
-    <td style="border: 1px solid black; background-color: #ffffff;"></td>
-    </tr>
+    <tr><td colspan="2"></td></tr>
     <tr><th>支給合計</th><td>¥{{totalAllowance}}</td></tr>
 
+    <tr><td colspan="2"></td></tr>
     <tr><th colspan="2" class="section-title">控除</th></tr>
     {{deductionHtml}}
-    <td style="border: 1px solid black; background-color: #e0e0e0; height:10px;"></td>
-      <td style="border: 1px solid black; background-color: #ffffff;"></td>
-    </tr>
-    
+    <tr><td colspan="2"></td></tr>
     <tr><th>控除合計</th><td>¥{{totalDeduction}}</td></tr>
-
 
     <tr><th class="total">差引支給額</th><td class="total">¥{{netPay}}</td></tr>
   </table>
@@ -141,6 +122,5 @@
   </div>
 
   {{downloadButton}}
-
 </body>
 </html>
