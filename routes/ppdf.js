@@ -1,8 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const pdf = require('html-pdf');
-const fetch = require('node-fetch'); // ←追加: API呼び出し用
+const fetch = require('node-fetch');
+const puppeteer = require('puppeteer');
 const router = express.Router();
 const displayNames = require('../data/display-names.json');
 
@@ -85,13 +85,29 @@ router.get('/pdf', async (req, res) => {
     .replace(/{{totalDeduction}}/g, totalDeduction.toLocaleString())
     .replace('{{downloadButton}}', ''); // PDF版ではボタン非表示
 
-  // PDF生成して返す
-  pdf.create(template).toStream((err, stream) => {
-    if (err) return res.status(500).send('PDF生成エラー');
+  // PDF生成して返す（puppeteer）
+  try {
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setContent(template, { waitUntil: 'networkidle0' });
+
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
+    });
+
+    await browser.close();
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=payslip.pdf');
-    stream.pipe(res);
-  });
+    res.end(pdfBuffer);
+
+  } catch (err) {
+    res.status(500).send('PDF生成エラー');
+  }
 });
 
 module.exports = router;
