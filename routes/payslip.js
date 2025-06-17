@@ -35,14 +35,21 @@ const { data: payslips, error: payslipError } = await supabase
   .from('salaries')
   .select('*')
   .eq('line_user_id', userId)
-  .like('month', `%${selectedMonth}%`);  // ←ここだけ変更
+  .like('month', `%${selectedMonth}%`);
 
 console.log('★LIKE検索 payslips:', payslips, 'payslipError:', payslipError);
-if (payslipError){
+
+if (payslipError) {
   console.error(payslipError);
   return res.status(500).send('給与データ取得エラー');
 }
-if (!payslip) return res.status(404).send('該当月の給与明細が見つかりません');
+if (!payslips || payslips.length === 0) {
+  return res.status(404).send('該当月の給与明細が見つかりません');
+}
+
+const payslip = payslips[0];
+// ここから下でpayslipを使う
+
 
   // --- テンプレート部分は今まで通り ---
   const { allowanceRows, deductionRows, totalAllowance, totalDeduction } = processPayslipData(payslip, displayNames);
