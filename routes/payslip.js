@@ -11,7 +11,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 router.get('/', async (req, res) => {
   const userId = req.query.userId;
   const selectedMonth = decodeURIComponent(req.query.month);
-
+  
+  // ここでリクエスト値をログ出力
+  console.log('userId:', userId, 'selectedMonth:', selectedMonth);
+  
   if (!userId || !selectedMonth) {
     return res.status(400).send('必要なクエリパラメータが不足しています');
   }
