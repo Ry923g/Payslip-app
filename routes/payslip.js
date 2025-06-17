@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     .from('employees')
     .select('*')
     .eq('line_user_id', userId)
-    .maybesingle();
+    .maybeSingle();
   if (employeeError) return res.status(500).send('従業員データ取得エラー');
   if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
 
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     .select('*')
     .eq('line_user_id', userId)
     .eq('month', selectedMonth)
-    .maybesingle();
+    .maybeSingle();
 
   if (payslipError){
     console.error(payslipError);  //エラー時原因特定
