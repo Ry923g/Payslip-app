@@ -34,7 +34,11 @@ router.get('/', async (req, res) => {
     .single();
   if (payslipError) return res.status(500).send('給与データ取得エラー');
   if (!payslip) return res.status(404).send('該当月の給与明細が見つかりません');
-
+  //エラー時原因特定
+  if (payslipError) {
+  console.error(payslipError);
+  return res.status(500).send('給与データ取得エラー');
+}
   // --- テンプレート部分は今まで通り ---
   const { allowanceRows, deductionRows, totalAllowance, totalDeduction } = processPayslipData(payslip, displayNames);
 
