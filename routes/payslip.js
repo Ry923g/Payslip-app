@@ -19,33 +19,36 @@ router.get('/', async (req, res) => {
     return res.status(400).send('必要なクエリパラメータが不足しています');
   }
 
-  // --- Supabaseで従業員チェック ---
-  const { data: employee, error: employeeError } = await supabase
-    .from('employees')
-    .select('*')
-    .eq('line_user_id', userId)
-    .maybeSingle();
-  if (employeeError) return res.status(500).send('従業員データ取得エラー');
-  if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
-
-  // --- Supabaseで給与明細取得 ---
- console.log('★クエリ直前 userId:', userId, 'selectedMonth:', selectedMonth);
-
-const { data: payslips, error: payslipError } = await supabase
-  .from('salaries')
+ // --- Supabaseで従業員チェック ---
+const { data: employee, error: employeeError } = await supabase
+  .from('employees')
   .select('*')
   .eq('line_user_id', userId)
-  .like('month', `%${selectedMonth}%`);
+  .maybeSingle();
+if (employeeError) return res.status(500).send('従業員データ取得エラー');
+if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
 
-console.log('★LIKE検索 payslips:', payslips, 'payslipError:', payslipError);
+// --- Supabaseで給与明細取得 ---
+const { data: employees } = await supabase.from('employees').select('*');
+const { data: salaries } = await supabase.from('salaries').select('*');
+console.log('employees:', employees);
+console.log('salaries:', salaries);
 
-if (payslipError) {
-  console.error(payslipError);
+const { data: payslips, error } = await supabase
+  .from('salaries')
+  .select('*')
+  
+console.log(payslips);
+
+if (error) {
+  console.error(error);
   return res.status(500).send('給与データ取得エラー');
 }
 if (!payslips || payslips.length === 0) {
   return res.status(404).send('該当月の給与明細が見つかりません');
 }
+
+
 
 const payslip = payslips[0];
 // ここから下でpayslipを使う
