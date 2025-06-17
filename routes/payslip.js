@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
   // --- Supabaseで従業員チェック ---
   const { data: employee, error: employeeError } = await supabase
-    .from('Employees')
+    .from('employees')
     .select('*')
     .eq('line_user_id', userId)
     .single();
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
   // --- Supabaseで給与明細取得 ---
   const { data: payslip, error: payslipError } = await supabase
-    .from('Payslips')
+    .from('salaries')
     .select('*')
     .eq('line_user_id', userId)
     .eq('month', selectedMonth)
