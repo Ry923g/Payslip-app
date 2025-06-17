@@ -29,19 +29,22 @@ router.get('/', async (req, res) => {
   if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
 
   // --- Supabaseで給与明細取得 ---
-  const { data: payslip, error: payslipError } = await supabase
-    .from('salaries')
-    .select('*')
-    .eq('line_user_id', userId)
-    .eq('month', selectedMonth)
-    .maybeSingle();
+ console.log('★クエリ直前 userId:', userId, 'selectedMonth:', selectedMonth);
 
-  if (payslipError){
-    console.error(payslipError);  //エラー時原因特定
-    return res.status(500).send('給与データ取得エラー');
-  }
-  if (!payslip) return res.status(404).send('該当月の給与明細が見つかりません');
+const { data: payslip, error: payslipError } = await supabase
+  .from('salaries')
+  .select('*')
+  .eq('line_user_id', userId)
+  .eq('month', selectedMonth)
+  .maybeSingle();
 
+console.log('★クエリ直後 payslip:', payslip, 'payslipError:', payslipError);
+
+if (payslipError){
+  console.error(payslipError);
+  return res.status(500).send('給与データ取得エラー');
+}
+if (!payslip) return res.status(404).send('該当月の給与明細が見つかりません');
 
   // --- テンプレート部分は今まで通り ---
   const { allowanceRows, deductionRows, totalAllowance, totalDeduction } = processPayslipData(payslip, displayNames);
