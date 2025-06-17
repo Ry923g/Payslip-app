@@ -31,15 +31,13 @@ router.get('/', async (req, res) => {
   // --- Supabaseで給与明細取得 ---
  console.log('★クエリ直前 userId:', userId, 'selectedMonth:', selectedMonth);
 
-const { data: payslip, error: payslipError } = await supabase
+const { data: payslips, error: payslipError } = await supabase
   .from('salaries')
   .select('*')
   .eq('line_user_id', userId)
-  .eq('month', selectedMonth)
-  .maybeSingle();
+  .like('month', `%${selectedMonth}%`);  // ←ここだけ変更
 
-console.log('★クエリ直後 payslip:', payslip, 'payslipError:', payslipError);
-
+console.log('★LIKE検索 payslips:', payslips, 'payslipError:', payslipError);
 if (payslipError){
   console.error(payslipError);
   return res.status(500).send('給与データ取得エラー');
