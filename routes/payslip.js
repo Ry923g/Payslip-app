@@ -31,14 +31,11 @@ if (!employee) return res.status(403).send('❌ このユーザーは登録さ�
 // --- Supabaseで給与明細取得 ---
 const { data: employees } = await supabase.from('employees').select('*');
 const { data: salaries } = await supabase.from('salaries').select('*');
-console.log('employees:', employees);
-console.log('salaries:', salaries);
 
 const { data: payslips, error } = await supabase
   .from('salaries')
   .select('*')
   
-console.log(payslips);
 
 if (error) {
   console.error(error);
