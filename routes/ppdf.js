@@ -88,26 +88,27 @@ router.get('/pdf', async (req, res) => {
 
   // PDF生成して返す（puppeteer）
   try {
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-    await page.setContent(template, { waitUntil: 'networkidle0' });
-
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
-    });
- console.log('PDF生成直前: buffer size =', pdfBuffer.length);//デバッグログ
-    await browser.close();
+    console.log('puppeteer起動前');
+const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+console.log('puppeteer起動後');
+const page = await browser.newPage();
+console.log('newPage作成後');
+await page.setContent(template, { waitUntil: 'networkidle0' });
+console.log('setContent完了');
+const pdfBuffer = await page.pdf({
+  format: 'A4',
+    printBackground: true,
+    margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' } 
+  });
+console.log('PDF生成完了:', pdfBuffer.length);
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=payslip.pdf');
     res.end(pdfBuffer);
 
   } catch (err) {
-    res.status(500).send('PDF生成エラー');
+     console.error('PDF生成エラー:', err);
+     res.status(500).send('PDF生成エラー');
   }
 });
 
