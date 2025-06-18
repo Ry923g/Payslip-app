@@ -87,7 +87,6 @@ router.get('/pdf', async (req, res) => {
     .replace('{{downloadButton}}', ''); // PDF版ではボタン非表示
 
   // PDF生成して返す（puppeteer）
- console.log('PDF生成直前: buffer size =', pdfBuffer.length);//デバッグログ
   try {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -100,7 +99,7 @@ router.get('/pdf', async (req, res) => {
       printBackground: true,
       margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
     });
-
+ console.log('PDF生成直前: buffer size =', pdfBuffer.length);//デバッグログ
     await browser.close();
 
     res.setHeader('Content-Type', 'application/pdf');
