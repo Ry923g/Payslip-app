@@ -93,7 +93,7 @@ for (const key in payslip) {
   try {
     console.log('puppeteer起動前');
 const browser = await puppeteer.launch({
-  executablePath: chromiumPath,
+  executablePath: puppeteer.executablePath(),
   args: ['--no-sandbox', '--disable-setuid-sandbox']});
 console.log('puppeteer起動後');
 const page = await browser.newPage();
