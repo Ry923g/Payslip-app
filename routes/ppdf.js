@@ -11,6 +11,7 @@ const SUPABASE_API_KEY = process.env.SUPABASE_ANON_KEY; // .envに設定必須�
 
 // ✨ /pdf PDFダウンロード ✨
 router.get('/pdf', async (req, res) => {
+ console.log('---------- /pdf route called! ----------');//デバッグ用ログ
   const userId = req.query.userId;
   const selectedMonth = req.query.month;
 
@@ -86,6 +87,7 @@ router.get('/pdf', async (req, res) => {
     .replace('{{downloadButton}}', ''); // PDF版ではボタン非表示
 
   // PDF生成して返す（puppeteer）
+ console.log('PDF生成直前: buffer size =', pdfBuffer.length);//デバッグログ
   try {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
