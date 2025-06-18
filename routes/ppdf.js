@@ -60,7 +60,10 @@ router.get('/pdf', async (req, res) => {
   let totalAllowance = 0;
   let totalDeduction = 0;
 
-  for (const key in payslip) {
+  // ここでchromiumPathを定義する
+const chromiumPath = '/opt/render/.cache/puppeteer/chrome/linux-137.0.7151.70/chrome';
+
+for (const key in payslip) {
     if (key.startsWith('allowance_') && Number(payslip[key])) {
       allowanceRows.push(`<tr><th>${displayNames[key] || key}</th><td>¥${Number(payslip[key]).toLocaleString()}</td></tr>`);
       totalAllowance += Number(payslip[key]);
