@@ -69,9 +69,10 @@ router.get('/callback', async (req, res) => {
         const userId = profileResponse.data.userId; // LINEユーザーID
 
         // --- Supabase連携 ---
+        // UUIDも取得する
         const { data: employees, error: dbError } = await supabase
             .from('employees')
-            .select('*')
+            .select('uuid, line_user_id') // uuidを必ず取得
             .eq('line_user_id', userId);
 
         if (dbError) {
@@ -81,15 +82,17 @@ router.get('/callback', async (req, res) => {
 
         if (employees && employees.length > 0) {
             // 登録済みユーザー
-            req.session.userId = userId; // セッションに保存
-            // 必要なら従業員DB上のIDなども保存
-            console.log(`ユーザー ${userId} は登録済みです。セッションID: ${req.session.id}`);
-            res.redirect(`/select?userId=${userId}`);
+            const uuid = employees[0].uuid;
+            req.session.userId = userId;   // セッションにLINE ID
+            req.session.userUuid = uuid;   // セッションにUUIDも
+            console.log(`ユーザー ${userId} は登録済み（uuid: ${uuid}）。セッションID: ${req.session.id}`);
+            res.redirect(`/select?u=${uuid}`); // uuidでリダイレクト
         } else {
             // 未登録ユーザー
             req.session.userId = userId;
+            req.session.userUuid = null;
             console.log(`ユーザー ${userId} は未登録です。`);
-            res.redirect(`/register?userId=${userId}`);
+            res.redirect(`/register`); // uuidは未発行なので付けない
         }
     } catch (err) {
         console.error('ログイン時のエラー:', err.response?.data || err);

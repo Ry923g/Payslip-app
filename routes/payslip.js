@@ -9,49 +9,50 @@ const displayNames = require('../data/display-names.json');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 router.get('/', async (req, res) => {
-  const userId = req.query.userId;
+  const uuid = req.query.u;
   const selectedMonth = decodeURIComponent(req.query.month);
-  
-  // ここでリクエスト値をログ出力
-  console.log('userId:', userId, 'selectedMonth:', selectedMonth);
-  
-  if (!userId || !selectedMonth) {
+
+  // ログ出力
+  console.log('uuid:', uuid, 'selectedMonth:', selectedMonth);
+
+  if (!uuid || !selectedMonth) {
     return res.status(400).send('必要なクエリパラメータが不足しています');
   }
 
- // --- Supabaseで従業員チェック ---
-const { data: employee, error: employeeError } = await supabase
-  .from('employees')
-  .select('*')
-  .eq('line_user_id', userId)
-  .maybeSingle();
-if (employeeError) return res.status(500).send('従業員データ取得エラー');
-if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
+  // --- uuidから従業員を取得 ---
+  const { data: employee, error: employeeError } = await supabase
+    .from('employees')
+    .select('line_user_id, name')
+    .eq('uuid', uuid)
+    .maybeSingle();
 
-// --- Supabaseで給与明細取得 ---
-const { data: employees } = await supabase.from('employees').select('*');
-const { data: salaries } = await supabase.from('salaries').select('*');
+  if (employeeError) return res.status(500).send('従業員データ取得エラー');
+  if (!employee) return res.status(403).send('❌ このユーザーは登録されていません');
 
-const { data: payslips, error } = await supabase
-  .from('salaries')
-  .select('*')
-  
+  // --- セッションのline_user_idと一致するかを確認（所有者チェック） ---
+  const loggedInLineUserId = req.session.userId;
+  if (employee.line_user_id !== loggedInLineUserId) {
+    return res.status(403).send('❌ 他人の給与明細にはアクセスできません');
+  }
 
-if (error) {
-  console.error(error);
-  return res.status(500).send('給与データ取得エラー');
-}
-if (!payslips || payslips.length === 0) {
-  return res.status(404).send('該当月の給与明細が見つかりません');
-}
+  // --- Supabaseから給与明細取得(uuidと月で絞る) ---
+  const { data: payslips, error } = await supabase
+    .from('salaries')
+    .select('*')
+    .eq('employee_uuid', uuid)
+    .eq('month', selectedMonth);
 
+  if (error) {
+    console.error(error);
+    return res.status(500).send('給与データ取得エラー');
+  }
+  if (!payslips || payslips.length === 0) {
+    return res.status(404).send('該当月の給与明細が見つかりません');
+  }
 
+  const payslip = payslips[0];
 
-const payslip = payslips[0];
-// ここから下でpayslipを使う
-
-
-  // --- テンプレート部分は今まで通り ---
+  // --- テンプレート部分 ---
   const { allowanceRows, deductionRows, totalAllowance, totalDeduction } = processPayslipData(payslip, displayNames);
 
   let template = fs.readFileSync(path.join(__dirname, '../templates', 'payslip.html'), 'utf8');
@@ -66,7 +67,7 @@ const payslip = payslips[0];
     .replace(/{{deductionHtml}}/g, deductionRows.join(''))
     .replace(/{{totalAllowance}}/g, totalAllowance.toLocaleString())
     .replace(/{{totalDeduction}}/g, totalDeduction.toLocaleString())
-    .replace('{{downloadButton}}', `<div class="download-button"><a href="/ppdf/pdf?userId=${userId}&month=${selectedMonth}" target="_blank">📄 PDFとしてダウンロード</a></div>`);
+    .replace('{{downloadButton}}', `<div class="download-button"><a href="/ppdf/pdf?u=${uuid}&month=${selectedMonth}" target="_blank">📄 PDFとしてダウンロード</a></div>`);
 
   res.send(template);
 });

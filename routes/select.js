@@ -4,16 +4,47 @@ const path = require('path');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 const router = express.Router();
+const { createClient } = require('@supabase/supabase-js');
+
+// Supabaseクライアントの初期化（必要に応じて共通化）
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const payslipPath = path.join(__dirname, '../data', 'payslips.json');
 
-router.get('/', csrfProtection, (req, res) => {
-  const userId = req.query.userId;
+router.get('/', csrfProtection, async (req, res) => {
+  const uuid = req.query.u;
 
-  if (!userId) {
+  if (!uuid) {
     return res.status(400).send(`
       <h1>⚠️ エラー</h1>
-      <p>ユーザーIDが指定されていません。</p>
+      <p>ユーザーID（uuid）が指定されていません。</p>
+      <a href="/">トップページに戻る</a>
+    `);
+  }
+
+  // DBでuuid→line_user_idを取得
+  const { data: employees, error } = await supabase
+    .from('employees')
+    .select('line_user_id')
+    .eq('uuid', uuid);
+
+  if (error || !employees || employees.length === 0) {
+    return res.status(404).send(`
+      <h1>⚠️ ユーザー情報が見つかりません</h1>
+      <a href="/">トップページに戻る</a>
+    `);
+  }
+
+  const payslipKey = uuid; // payslips.jsonがuuid基準で管理されている場合
+  const loggedInLineUserId = req.session.userId;
+
+  // 不正アクセス防止: セッションユーザーとアクセス先ユーザーが一致するかチェック
+  if (employees[0].line_user_id !== loggedInLineUserId) {
+    return res.status(403).send(`
+      <h1>⚠️ アクセス権限エラー</h1>
+      <p>他のユーザーの給与明細にはアクセスできません。</p>
       <a href="/">トップページに戻る</a>
     `);
   }
@@ -29,7 +60,7 @@ router.get('/', csrfProtection, (req, res) => {
     }
 
     const payslips = JSON.parse(data);
-    const userPayslips = payslips[userId];
+    const userPayslips = payslips[payslipKey];
 
     if (!userPayslips) {
       return res.status(404).send(`
@@ -45,7 +76,7 @@ router.get('/', csrfProtection, (req, res) => {
     res.send(`
       <h1>給与明細の月を選択</h1>
       <form action="/payslip" method="GET">
-        <input type="hidden" name="userId" value="${userId}" />
+        <input type="hidden" name="u" value="${uuid}" />
         <select name="month">
           ${options}
         </select>
