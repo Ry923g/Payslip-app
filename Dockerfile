@@ -1,5 +1,5 @@
 # 1. まずPlaywright入りのLinuxイメージを用意（公式が用意してくれてる！）
-FROM mcr.microsoft.com/playwright:v1.44.0-jammy
+FROM mcr.microsoft.com/playwright:v1.53.1-jammy
 
 # 2. 作業ディレクトリを作成
 WORKDIR /app
