@@ -1,64 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>給与明細アプリ</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            font-family: system-ui, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f8fafb;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 2em 1em;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            border-radius: 12px;
-            margin-top: 10vh;
-        }
-        h1 {
-            font-size: 1.4em;
-            margin-bottom: 1.5em;
-            text-align: center;
-        }
-        a {
-            display: block;
-            background: #06c755;
-            color: #fff;
-            text-align: center;
-            padding: 1em;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 1.1em;
-            margin-top: 1em;
-            font-weight: bold;
-            box-shadow: 0 1px 4px rgba(6,199,85,0.07);
-            transition: background 0.2s;
-        }
-        a:hover, a:focus {
-            background: #13e25b;
-        }
-        @media (max-width: 600px) {
-            .container {
-                margin-top: 1em;
-                border-radius: 0;
-                box-shadow: none;
-                max-width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>給与明細アプリ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #ffe5b3;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 520px;
+      margin: auto;
+      margin-top: 6vh;
+      background: #fff;
+      padding: 3em 1.2em 2em 1.2em;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(218,60,28,0.08);
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1.5em;
+      line-height: 1.3;
+      color: #da3c1c;
+    }
+    a.login-btn {
+      display: block;
+      background: #da3c1c;
+      color: #fff;
+      text-align: center;
+      padding: 1.2em;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.25em;
+      margin-top: 2em;
+      font-weight: bold;
+      box-shadow: 0 1px 4px rgba(218,60,28,0.12);
+      transition: background 0.2s;
+    }
+    a.login-btn:hover, a.login-btn:focus {
+      background: #ff5722;
+    }
+    img.logo {
+      width: 120px;
+      margin-bottom: 2em;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 2em 0.2em 1em 0.2em; border-radius: 0; }
+      h1 { font-size: 1.2em; }
+      img.logo { width: 80px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ようこそ<br>給与明細アプリへ！</h1>
-        <a href="/auth">LINEでログイン</a>
-    </div>
+  <div class="container">
+    <img src="/img/shop-logo.png" alt="店舗ロゴ" class="logo">
+    <h1>ようこそ<br>給与明細アプリへ！</h1>
+    <a href="/auth" class="login-btn">LINEでログイン</a>
+  </div>
 </body>
 </html>
