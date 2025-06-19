@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-     "postinstall": "npx playwright install --with-deps",
+     "postinstall": "npx playwright install",
      "start": "node app.js"   
   },
   "dependencies": {
