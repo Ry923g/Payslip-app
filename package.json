@@ -22,6 +22,7 @@
     "install": "^0.13.0",
     "npm": "^11.4.1",
     "puppeteer": "^24.10.1",
+    "postinstall": "puppeteer install && ls -lhR /opt/render/.cache/puppeteer",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   }
