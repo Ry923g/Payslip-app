@@ -65,18 +65,7 @@ router.get('/', csrfProtection, async (req, res) => {
 
   // 重複除去（月リスト）
   const months = [...new Set(payslips.map(p => p.month))];
-  const options = months.map(m => `<option value="${m}">${m}</option>`).join('');
-
-  res.send(`
-    <h1>給与明細の月を選択</h1>
-    <form action="/payslip" method="GET">
-      <input type="hidden" name="u" value="${uuid}" />
-      <select name="month">
-        ${options}
-      </select>
-      <button type="submit">表示</button>
-    </form>
-  `);
+  res.render('select', { uuid, months });
 });
 
 module.exports = router;
