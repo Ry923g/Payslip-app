@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "postinstall": "puppeteer install && ls -lhR /opt/render/.cache/puppeteer"
+    "start": "node app.js"   
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",
