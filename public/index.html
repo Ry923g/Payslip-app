@@ -1,11 +1,64 @@
-<!DOCTYPE html> 
-<html> 
-    <head>
-        <meta charset="UTF-8">
-        <title>給与明細アプリ</title>
-    </head>
-    <body>
-        <h1>ようこそ 給与明細アプリへ！</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>給与明細アプリ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8fafb;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 2em 1em;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border-radius: 12px;
+            margin-top: 10vh;
+        }
+        h1 {
+            font-size: 1.4em;
+            margin-bottom: 1.5em;
+            text-align: center;
+        }
+        a {
+            display: block;
+            background: #06c755;
+            color: #fff;
+            text-align: center;
+            padding: 1em;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.1em;
+            margin-top: 1em;
+            font-weight: bold;
+            box-shadow: 0 1px 4px rgba(6,199,85,0.07);
+            transition: background 0.2s;
+        }
+        a:hover, a:focus {
+            background: #13e25b;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 1em;
+                border-radius: 0;
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ようこそ<br>給与明細アプリへ！</h1>
         <a href="/auth">LINEでログイン</a>
-    </body>
+    </div>
+</body>
 </html>
