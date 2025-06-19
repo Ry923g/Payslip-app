@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: system-ui, sans-serif;
-      background: #ffe5b3;
+      background: #f77f00; /* 柿色 */
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -15,20 +15,21 @@
       flex-direction: column;
     }
     .container {
-      max-width: 520px;
+      max-width: 600px;
       margin: auto;
-      margin-top: 6vh;
+      margin-top: 5vh;
       background: #fff;
       padding: 3em 1.2em 2em 1.2em;
-      border-radius: 18px;
-      box-shadow: 0 4px 16px rgba(218,60,28,0.08);
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(128,0,32,0.07);
       text-align: center;
     }
     h1 {
       text-align: center;
-      font-size: 2em;
+      font-size: 2.3em;
       margin-bottom: 2em;
-      color: #da3c1c;
+      color: #800020; /* エンジ */
+      font-weight: 800;
     }
     form {
       display: flex;
@@ -37,53 +38,60 @@
       align-items: center;
     }
     select {
-      font-size: 1.2em;
-      padding: 0.8em 1em;
-      border-radius: 7px;
-      border: 1.2px solid #da3c1c;
+      font-size: 1.25em;
+      padding: 0.9em 1.1em;
+      border-radius: 8px;
+      border: 1.5px solid #800020;
       background: #fff3e0;
-      width: 80%;
-      max-width: 320px;
+      width: 85%;
+      max-width: 350px;
+      color: #800020;
+      font-weight: bold;
+      letter-spacing: 0.05em;
     }
     button[type="submit"] {
-      background: #681515;
+      background: #800020; /* エンジ */
       color: #fff;
       border: none;
-      border-radius: 7px;
-      padding: 1.2em 2em;
-      font-size: 1.25em;
+      border-radius: 10px;
+      padding: 1.4em 2em;
+      font-size: 1.3em;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 1px 4px rgba(218,60,28,0.12);
+      box-shadow: 0 2px 8px rgba(128,0,32,0.11);
       transition: background 0.2s;
-      width: 80%;
-      max-width: 320px;
+      width: 85%;
+      max-width: 350px;
+      margin-top: 1em;
+      letter-spacing: 0.06em;
     }
     button[type="submit"]:active,
     button[type="submit"]:focus {
-      background: #681515;
+      background: #a83248;
     }
     .top-link {
       display: block;
-      margin: 1.4em auto 0 auto;
+      margin: 1.8em auto 0 auto;
       text-align: center;
       font-size: 1em;
-      color: #da3c1c;
+      color: #800020;
       text-decoration: underline;
+      font-weight: bold;
     }
     img.logo {
       width: 240px;
+      height: 240px;
+      object-fit: contain;
       margin-bottom: 2em;
+      margin-top: 1em;
+      display: inline-block;
+      max-width: 90vw;
+      max-height: 40vh;
     }
     @media (max-width: 600px) {
-      .container {
-        padding: 2em 0.2em 1em 0.2em;
-        border-radius: 0;
-      }
-      h1 {
-        font-size: 1.2em;
-      }
-      img.logo { width: 80px; }
+      .container { padding: 2em 0.2em 1em 0.2em; border-radius: 0; }
+      h1 { font-size: 1.3em; }
+      img.logo { width: 160px; height: 160px; }
     }
   </style>
 </head>
