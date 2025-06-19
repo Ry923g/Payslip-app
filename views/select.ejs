@@ -1,97 +1,106 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>給与明細の月を選択</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
+<head>
+  <meta charset="UTF-8">
+  <title>給与明細の月を選択</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
     body {
-            font-family: system-ui, sans-serif;
-            background: #f8fafb;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-          }
-          .container {
-            max-width: 400px;
-            margin: auto;
-            margin-top: 10vh;
-            background: #fff;
-            padding: 2em 1em 1.5em 1em;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-          }
-          h1 {
-            text-align: center;
-            font-size: 1.35em;
-            margin-bottom: 2em;
-            letter-spacing: 0.03em;
-          }
-          form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.3em;
-          }
-          select {
-            font-size: 1.1em;
-            padding: 0.6em 0.4em;
-            border-radius: 7px;
-            border: 1px solid #ccc;
-            background: #f6f6f6;
-          }
-          button[type="submit"] {
-            background: #06c755;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 1em;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 1px 4px rgba(6,199,85,0.07);
-            transition: background 0.2s;
-          }
-          button[type="submit"]:active,
-          button[type="submit"]:focus {
-            background: #13e25b;
-          }
-          .top-link {
-            display: block;
-            margin: 1.4em auto 0 auto;
-            text-align: center;
-            font-size: 1em;
-            color: #06c755;
-            text-decoration: underline;
-          }
-          @media (max-width: 600px) {
-            .container {
-              margin-top: 1.5em;
-              border-radius: 0;
-              box-shadow: none;
-              max-width: 100%;
-              padding: 1.5em 0.3em 1em 0.3em;
-            }
-            h1 {
-              font-size: 1.1em;
-            }
-          }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>給与明細の月を選択</h1>
-      <form action="/payslip" method="GET">
-        <input type="hidden" name="u" value="<%= uuid %>" />
-        <select name="month" required>
-          <% months.forEach(function(m) { %>
-            <option value="<%= m %>"><%= m %></option>
-          <% }); %>
-        </select>
-        <button type="submit">表示</button>
-      </form>
-      <a class="top-link" href="/">トップページへ戻る</a>
-    </div>
-  </body>
+      font-family: system-ui, sans-serif;
+      background: #ffe5b3;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 520px;
+      margin: auto;
+      margin-top: 6vh;
+      background: #fff;
+      padding: 3em 1.2em 2em 1.2em;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(218,60,28,0.08);
+      text-align: center;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 2em;
+      color: #da3c1c;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.3em;
+      align-items: center;
+    }
+    select {
+      font-size: 1.2em;
+      padding: 0.8em 1em;
+      border-radius: 7px;
+      border: 1.2px solid #da3c1c;
+      background: #fff3e0;
+      width: 80%;
+      max-width: 320px;
+    }
+    button[type="submit"] {
+      background: #da3c1c;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 1.2em 2em;
+      font-size: 1.25em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(218,60,28,0.12);
+      transition: background 0.2s;
+      width: 80%;
+      max-width: 320px;
+    }
+    button[type="submit"]:active,
+    button[type="submit"]:focus {
+      background: #ff5722;
+    }
+    .top-link {
+      display: block;
+      margin: 1.4em auto 0 auto;
+      text-align: center;
+      font-size: 1em;
+      color: #da3c1c;
+      text-decoration: underline;
+    }
+    img.logo {
+      width: 120px;
+      margin-bottom: 2em;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 2em 0.2em 1em 0.2em;
+        border-radius: 0;
+      }
+      h1 {
+        font-size: 1.2em;
+      }
+      img.logo { width: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/img/shop-logo.jpg" alt="店舗ロゴ" class="logo">
+    <h1>給与明細の月を選択</h1>
+    <form action="/payslip" method="GET">
+      <input type="hidden" name="u" value="<%= uuid %>" />
+      <select name="month" required>
+        <% months.forEach(function(m) { %>
+          <option value="<%= m %>"><%= m %></option>
+        <% }); %>
+      </select>
+      <button type="submit">表示</button>
+    </form>
+    <a class="top-link" href="/">トップページへ戻る</a>
+  </div>
+</body>
 </html>
