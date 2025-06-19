@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const router = express.Router();
 const displayNames = require('../data/display-names.json');
 
@@ -60,10 +60,7 @@ router.get('/pdf', async (req, res) => {
   let totalAllowance = 0;
   let totalDeduction = 0;
 
-  // ここでchromiumPathを定義する
-const chromiumPath = '/opt/render/.cache/puppeteer/chrome/linux-137.0.7151.70/chrome';
-
-for (const key in payslip) {
+ for (const key in payslip) {
     if (key.startsWith('allowance_') && Number(payslip[key])) {
       allowanceRows.push(`<tr><th>${displayNames[key] || key}</th><td>¥${Number(payslip[key]).toLocaleString()}</td></tr>`);
       totalAllowance += Number(payslip[key]);
@@ -89,13 +86,11 @@ for (const key in payslip) {
     .replace(/{{totalDeduction}}/g, totalDeduction.toLocaleString())
     .replace('{{downloadButton}}', ''); // PDF版ではボタン非表示
 
-  // PDF生成して返す（puppeteer）
+  // PDF生成して返す（playwright）
   try {
-    console.log('puppeteer起動前');
-const browser = await puppeteer.launch({
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-  args: ['--no-sandbox', '--disable-setuid-sandbox']});
-console.log('puppeteer起動後');
+    console.log('playwrightr起動前');
+const browser = await chromium.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox']});
 const page = await browser.newPage();
 console.log('newPage作成後');
 await page.setContent(template, { waitUntil: 'networkidle0' });
